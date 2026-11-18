@@ -1,0 +1,47 @@
+{% extends "posts/base.html"%}
+{% load crispy_forms_tags %}
+
+{%block contents%}
+<br>
+<div class="main-container">
+    <div class="topbar">
+        <h1 class="title ">Signup to our blog</h1>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form.username|as_crispy_field }}
+
+        {{ form.email|as_crispy_field }}
+
+        <div class="mb-3">
+            {{ form.password1|as_crispy_field }}
+            <input type="checkbox" onclick="togglePassword('id_password1')">
+            Show Password
+        </div>
+
+        <div class="mb-3">
+            {{ form.password2|as_crispy_field }}
+            <input type="checkbox" onclick="togglePassword('id_password2')">
+            Show Password
+        </div>
+
+        <button class="btn btn-primary" type="submit">Sign up</button>
+    </form>
+
+    <script>
+        function togglePassword(id) {
+            const field = document.getElementById(id);
+
+            if (field.type === "password") {
+                field.type = "text";
+            } else {
+                field.type = "password";
+            }
+        }
+    </script>
+
+</div>
+
+{%endblock%}

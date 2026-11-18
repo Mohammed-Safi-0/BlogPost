@@ -1,0 +1,42 @@
+{% extends "posts/base.html" %}
+
+{% block contents %}
+<br>
+
+<div class="main-container">
+    <div class="topbar">
+        <h1 class="title">Verify OTP</h1>
+    </div>
+
+    <p>
+        We have sent a 6-digit OTP to your registered email address.
+    </p>
+
+    {% if error %}
+    <div class="alert alert-danger">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="otp" class="form-label">Enter OTP</label>
+
+            <input type="text" name="otp" id="otp" class="form-control" maxlength="6" minlength="6" inputmode="numeric"
+                required>
+        </div>
+
+        <button class="btn btn-primary" type="submit">
+            Verify OTP
+        </button>
+        <div class="mt-3">
+            <a href="{% url 'resend_otp' %}" class="btn btn-secondary">
+                Resend OTP
+            </a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
