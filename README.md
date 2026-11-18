@@ -89,3 +89,19 @@ http://127.0.0.1:8000/
 ## Developer
 
 Developed as part of an MCA academic project.
+
+## Project Screenshots
+
+![Homepage](screenshots/homepage.png)
+
+![Darkmode](screenshots/darkmode.png)
+
+![Editpost](screenshots/editpost.png)
+
+![Features](screenshots/ai,like.cmnt,share,rprt.png)
+
+![Manage_User](screenshots/manageuser.png)
+
+![Edit_Profile](screenshots/editprofile.png)
+
+![User_Blogs](screenshots/userblogs.png)
