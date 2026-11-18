@@ -98,7 +98,7 @@ Developed as part of an MCA academic project.
 
 ![Editpost](screenshots/editpost.png)
 
-![Features](screenshots/ai,like.cmnt,share,rprt.png)
+![Features](screenshots/ai,like,cmnt,share,rprt.png)
 
 ![Manage_User](screenshots/manageuser.png)
 
