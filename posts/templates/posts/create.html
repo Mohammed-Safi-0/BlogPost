@@ -1,0 +1,29 @@
+{% extends "posts/base.html"%}
+{% load crispy_forms_tags %}
+{%block contents%}
+<br>
+    <div class="main-container form-card">
+
+    <div class="form-header">
+        <h1>Create a Blog Post</h1>
+        <p>Share your thoughts, stories and ideas with the world.</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form.title|as_crispy_field }}
+        {{ form.content|as_crispy_field }}
+        {{ form.images|as_crispy_field }}
+        {{ form.video|as_crispy_field }}
+        {{ form.category|as_crispy_field }}
+        {{ form.tags|as_crispy_field }}
+        <br>
+        <button type="submit" class="btn btn-primary">
+            🚀 Publish Post
+        </button>
+    </form>
+
+</div>
+
+{%endblock%}

@@ -1,0 +1,110 @@
+{% extends "posts/base.html"%}
+
+{%block contents%}
+
+<div class="page-layout">
+
+    <!-- ===== LEFT FILTER SIDEBAR ===== -->
+    <aside class="filter-sidebar">
+        <h3 class="filter-title">Filter by Category</h3>
+
+        <a href="{% url 'blogposts' %}" class="filter-item {% if not selected_category %}filter-item-active{% endif %}">
+            All Posts
+        </a>
+
+        {% for cat in categories %}
+        <a href="{% url 'blogposts' %}?category={{ cat.id }}"
+            class="filter-item {% if selected_category == cat.id|stringformat:'s' %}filter-item-active{% endif %}">
+            {{ cat.name }}
+            <span class="filter-count">{{ cat.blogpost_set.count }}</span>
+        </a>
+        {% endfor %}
+    </aside>
+
+
+    <div class="main-container">
+        <div class="topbar">
+            <h1 class="title">Blogposts of {{user.username}}</h1>
+            <a class="create-btn" href="{% url 'create' %}">+ Create blogpost</a>
+        </div>
+
+        {% if blogscount == 0 %}
+        <div class="empty-state">
+            <h3>No blog posts found in this category.</h3>
+            <p>Create your first blogpost to get started</p>
+        </div>
+        {% else %}
+
+        {% for blog in blogs %}
+        <div class="article">
+            <div class="article-image">
+
+    {% with first_image=blog.images.first %}
+
+        {% if first_image %}
+            <img src="{{ first_image.image.url }}" alt="{{ blog.title }}">
+
+        {% elif blog.image %}
+            <img src="{{ blog.image.url }}" alt="{{ blog.title }}">
+
+        {% elif blog.video %}
+            <video controls>
+                <source src="{{ blog.video.url }}" type="video/mp4">
+                Your browser does not support video.
+            </video>
+
+        {% endif %}
+
+    {% endwith %}
+
+</div>
+
+            <div class="article-content">
+                <h2 class="blog-title">{{blog.title}}</h2>
+                <div class="article-details">
+                    <div class="article-date">{{blog.created_on|date:"F j, Y"}}</div>
+                    {% if blog.category %}
+                    <div class="article-dot">&middot;</div>
+                    <div class="article-category">{{blog.category.name}}</div>
+                    {% endif %}
+                    <div class="article-dot">&middot;</div>
+                    <p class="article-category">by {{blog.created_by.username}}</p>
+                    <div class="article-dot">&middot;</div>
+                    <p class="article-category">{{ blog.views_count }} view{{ blog.views_count|pluralize }}</p>
+                </div>
+                <p>{{blog.content|truncatechars:200}}</p>
+                {% if blog.tags.exists %}
+                <div class="tag-holder">
+                    {% for tag in blog.tags.all %}
+                    <span class="article-tags"> #{{tag.name}}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="article-buttons">
+                    <a class="btn btn-outline-primary" href="{% url 'edit' blog.id %}">Edit</a>
+                    <a class="btn btn-outline-danger" href="{% url 'delete' blog.id %}">Delete</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% if blogs.paginator.num_pages > 1 %}
+        <div class="pagination-nav">
+            {% if blogs.has_previous %}
+            <a href="?page={{ blogs.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}"
+                class="page-btn">&laquo; Prev</a>
+            {% endif %}
+
+            <span class="page-info">Page {{ blogs.number }} of {{ blogs.paginator.num_pages }}</span>
+
+            {% if blogs.has_next %}
+            <a href="?page={{ blogs.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}"
+                class="page-btn">Next &raquo;</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+
+</div>
+
+{%endblock%}

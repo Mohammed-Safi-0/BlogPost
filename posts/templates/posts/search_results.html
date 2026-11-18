@@ -1,0 +1,70 @@
+{% extends "posts/base.html" %}
+
+{% block contents %}
+
+<div class="main-container">
+    <div class="topbar">
+        <h1 class="title">Search Results for "{{ query }}"</h1>
+    </div>
+
+    {% if results %}
+    <p style="color: gray; margin-bottom: 16px;">{{ results|length }} result(s) found</p>
+    <div>
+        {% for blog in results %}
+        <div class="article">
+            <div class="article-image">
+                {% if blog.video %}
+                <video controls preload="metadata">
+                            <source src="{% url 'stream_video' blog.video.name %}" type="video/mp4">
+                            Your browser does not support video.
+                </video>
+                
+                {% elif blog.image %}
+                <img src="{{ blog.image.url }}" alt="{{ blog.title }}">
+                {% endif %}
+            </div>
+            <div class="article-content">
+                <h2 class="blog-title">{{ blog.title }}</h2>
+                <div class="article-details">
+                    <div class="article-date">{{ blog.created_on|date:"F j, Y" }}</div>
+                    {% if blog.category %}
+                    <div class="article-dot">&middot;</div>
+                    <p class="article-category">{{ blog.category.name }}</p>
+                    {% endif %}
+                    <div class="article-dot">&middot;</div>
+                    <p class="article-category">by {{ blog.created_by.username }}</p>
+                </div>
+                <p>{{ blog.content|truncatechars:200 }}</p>
+
+                {% if blog.tags.all %}
+                <div class="tag-holder">
+                    {% for tag in blog.tags.all %}
+                    <span class="article-tags">#{{ tag.name }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="article-buttons">
+                    <a href="{% url 'details' blog.id %}" class="btn btn-outline-primary">
+                        Read More...
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% elif query %}
+    <div style="text-align:center; padding: 60px 0;">
+        <p style="font-size:18px;">😢 No results found for "<strong>{{ query }}</strong>"</p>
+        <p style="color:gray;">Try searching by title, content, category, tag or author name.</p>
+    </div>
+
+    {% else %}
+    <div style="text-align:center; padding: 60px 0;">
+        <p style="font-size:18px;">Type something in the search bar to find blogs.</p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "posts/base.html"%}
+
+{%block contents%}
+
+<div class="main-container">
+    <div class="topbar">
+        <h1 class="title ">Delete a Blogpost</h1>
+    </div>
+    <div class="article-delete">
+
+        <div class="article-content">
+            <h2 class="blog-title">{{ blog.title }}</h2>
+            <div class="article-date">{{blog.created|date:"F j,Y"}}</div>
+            <p>{{blog.content|truncatechars:200}}</p>
+            <div class="article-image-delete">
+                {% with first_image=blog.images.first %}
+
+                        {% if first_image %}
+                        <img src="{{ first_image.image.url }}" alt="{{ blog.title }}">
+
+                        {% elif blog.image %}
+                        <img src="{{ blog.image.url }}" alt="{{ blog.title }}">
+                        
+                        {% elif blog.video %}
+                        <video controls preload="metadata">
+                            <source src="{% url 'stream_video' blog.video.name %}" type="video/mp4">
+                            Your browser does not support video.
+                        </video>
+                        
+
+                        {% endif %}
+
+                        {% endwith %}
+            </div>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <p class="delete-text">Are you sure that you want to delete this blogpost?</p>
+            <div class="article-buttons">
+                <button type="submit" class="btn btn-danger">
+                    Yes, Delete
+                </button>
+
+                <a class="btn btn-secondary" href="{% url 'home' %}">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+    {%endblock%}

@@ -1,0 +1,53 @@
+{% extends "posts/base.html" %}
+
+{% block contents %}
+<br>
+<div class="main-container">
+    <div class="topbar">
+        <h1 class="title">Manage Users</h1>
+    </div>
+
+    <table class="moderation-table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Joined</th>
+                <th>Posts</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td>{{ u.username }}{% if u.is_superuser %} 👑{% endif %}</td>
+                <td>{{ u.email|default:"—" }}</td>
+                <td>{{ u.date_joined|date:"M j, Y" }}</td>
+                <td>{{ u.blogpost_set.count }}</td>
+                <td>
+                    {% if u.is_active %}
+                        <span class="status-active">Active</span>
+                    {% else %}
+                        <span class="status-blocked">Blocked</span>
+                    {% endif %}
+                </td>
+                <td class="moderation-actions">
+                    {% if u != user %}
+                        <a href="{% url 'toggle_user_active' u.id %}" class="btn btn-outline-primary">
+                            {% if u.is_active %}Block{% else %}Unblock{% endif %}
+                        </a>
+                        <a href="{% url 'delete_user' u.id %}" class="btn btn-outline-danger"
+                           onclick="return confirm('Delete {{ u.username }} and all their posts? This cannot be undone.');">
+                            Delete
+                        </a>
+                    {% else %}
+                        <span style="color:#9ca3af;">(you)</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

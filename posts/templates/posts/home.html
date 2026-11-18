@@ -1,0 +1,155 @@
+{% extends "posts/base.html"%}
+
+{%block contents%}
+
+<div class="page-layout home-page">
+
+    <!-- ===== LEFT FILTER SIDEBAR ===== -->
+    <aside class="filter-sidebar">
+        <h3 class="filter-title">Filter by Category</h3>
+
+        <a href="{% url 'home' %}" class="filter-item {% if not selected_category %}filter-item-active{% endif %}">
+            All Posts
+        </a>
+
+        {% for cat in categories %}
+        <a href="{% url 'home' %}?category={{ cat.id }}"
+            class="filter-item {% if selected_category == cat.id|stringformat:'s' %}filter-item-active{% endif %}">
+            {{ cat.name }}
+            <span class="filter-count">{{ cat.blogpost_set.count }}</span>
+        </a>
+        {% endfor %}
+    </aside>
+
+    <!-- ===== BLOG POSTS AREA ===== -->
+    <div class="blog-area">
+        <div class="main-container">
+            <div class="dashboard-topbar">
+                <h1 class="greeting-title" id="greetingTitle">
+                    Welcome{% if user.is_authenticated %}, {{ user.username }}{% endif %}!
+                </h1>
+
+                <div class="chips-row">
+                    <div class="chips-row">
+                        <div class="info-chip" id="dateChip">
+                            <span class="info-chip-icon">📅</span>
+                            <span id="dateChipText"></span>
+                        </div>
+                        {% if trending_post %}
+                        <a href="{% url 'details' trending_post.id %}" class="info-chip info-chip-link">
+                            <span class="info-chip-icon">🔥</span>
+                            <span>Trending: {{ trending_post.title|truncatechars:28 }}</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="hero-section">
+                    <h1>Discover Stories & Ideas</h1>
+                    <p>Explore articles, insights and thoughts from our community.</p>
+                    <p>{{ blogscount }} post{{ blogscount|pluralize }} available</p>
+                </div>
+
+                {% if blogscount == 0 %}
+                <div class="empty-state">
+                    <h3>No blog posts found in this category.</h3>
+                    <p>Share your first blog with the community</p>
+                </div>
+                {% else %}
+
+                {% for blog in blogs %}
+                <div class="article">
+                    <div class="article-image">
+
+                        {% with first_image=blog.images.first %}
+
+                        {% if first_image %}
+                        <img src="{{ first_image.image.url }}" alt="{{ blog.title }}">
+
+                        {% elif blog.image %}
+                        <img src="{{ blog.image.url }}" alt="{{ blog.title }}">
+                        {% elif blog.video %}
+                        <video controls preload="metadata">
+                            <source src="{% url 'stream_video' blog.video.name %}" type="video/mp4">
+                            Your browser does not support video.
+                        </video>
+                        
+
+                        {% endif %}
+
+                        {% endwith %}
+
+                    </div>
+                    <div class="article-content">
+                        <h2 class="blog-title">{{blog.title}}</h2>
+
+                        <div class="article-details">
+                            {{ blog.created_on|date:"F j, Y" }}
+                            {% if blog.category %}
+                            <div class="article-dot"> &middot;</div>
+                            <span class="article-category">{{blog.category.name}}</span>
+                            {% endif %}
+
+                            <div class="article-dot"> &middot;</div> <span class="article-category"> by
+                                {{blog.created_by.username}}</span>
+                            <div class="article-dot"> &middot;</div>
+                            <span class="article-category">{{ blog.views_count }} view{{ blog.views_count|pluralize}}
+                            </span>
+                        </div>
+                        <p>{{blog.content|truncatechars:200}}</p>
+                        {% if blog.tags.all %}
+                        <div class="tag-holder">
+                            {% for tag in blog.tags.all %}
+                            <span class="article-tags"> #{{tag.name}}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="article-buttons">
+                            <a href="{% url 'details' blog.id %}" class="btn btn-outline-primary">Read More...</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% if blogs.paginator.num_pages > 1 %}
+                <div class="pagination-nav">
+                    {% if blogs.has_previous %}
+                    <a href="?page={{ blogs.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}"
+                        class="page-btn">&laquo; Prev</a>
+                    {% endif %}
+
+                    <span class="page-info">Page {{ blogs.number }} of {{ blogs.paginator.num_pages }}</span>
+
+                    {% if blogs.has_next %}
+                    <a href="?page={{ blogs.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}"
+                        class="page-btn">Next &raquo;</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+    <script>
+        // ---- Greeting: swap "Welcome" for a time-of-day greeting ----
+        (function () {
+            const hour = new Date().getHours();
+            let greeting = "Good evening";
+            if (hour < 12) greeting = "Good morning";
+            else if (hour < 17) greeting = "Good afternoon";
+
+            const el = document.getElementById('greetingTitle');
+            el.textContent = el.textContent.replace('Welcome', greeting);
+        })();
+        // ---- Date chip: today's date, client-side ----
+        (function () {
+            const dateEl = document.getElementById('dateChipText');
+            const today = new Date();
+            dateEl.textContent = today.toLocaleDateString(undefined, {
+                weekday: 'short',
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+        })();
+    </script>
+    {%endblock%}
